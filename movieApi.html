@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Movies</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="results">
+         <div class='mostUser' ></div> 
+        <div class='mostMonth' ></div> 
+      <div class='mostMovie' ></div>
+      </div>
+    <script>
+        //create blank arrays for movies/checkouts
+        var movies = [];
+        var checkouts = [];
+        $(document).ready(function () {
+            //get checkouts,split, and push into checkouts array
+            $.get('http://159.203.175.239:9001/checkouts.txt', function (checkoutz) {
+                checkoutz = checkoutz.split('\n');
+                for (var i = 0; i < checkoutz.length; i++) {
+                    checkouts.push(checkoutz[i].split(' '));
+                }
+                var mostOften = modeCustomer(checkouts);
+                var bestMonth = highestMonth(checkouts);
+                //let's do some jQuery!!
+                $('.mostUser').append('<p>The customer(s) with the most rentals was(were): ' + mostOften + '</p>')
+                $('.mostMonth').append('<p>The month(s) with the most rentals was(were): ' + bestMonth + '</p>')
+                
+                // pulls the movie information 
+                $.get('http://159.203.175.239:9001/movies.txt', function (moviez) {
+                    //split at break
+                    moviez = moviez.split('\n');
+                    //push movie into movies array
+                    for (var i = 0; i < moviez.length; i++) {
+                        movies.push(moviez[i].split(' '));
+                    }
+                   
+                    var poptit = modeTitle(checkouts, movies).toString();
+                    $('.mostMovie').append('<p>The most popular movie title has been: ' + poptit + '</p>')
+                });
+
+            });
+            // filters thru the checkouts to find the highest movie watch by ID
+            function modeCustomer(checkouts) {
+                var count = {};
+                var maxcount = 1;
+                //start at count of 1
+                var maxUser = [];
+                //count the numbers of users, with amounts of check outs and userID
+                for (var i = 0; i < checkouts.length; i++) {
+                    if (count[checkouts[i][0]] === undefined) {
+                        count[checkouts[i][0]] = 0;
+                    }
+                    //increment by 1 each time same userID occurs
+                    count[checkouts[i][0]] += 1;
+                }
+                for (var userId in count) {
+                    if (count[userId] >= maxcount) {
+                        maxcount = count[userId];
+                        //assign maxUser to the new highest userID
+                        maxUser.push(userId);
+                    }
+                }
+                return maxUser.toString();
+            }
+            //finds the month with the highest checkout rate
+            function highestMonth(checkouts) {
+                var count = {};
+                var maxcount = 1;
+                var maxMonth = checkouts[0][1];
+                //finds the number of checkouts per month from the checkouts arr and counts them 
+                for (var i = 0; i < checkouts.length; i++) {
+                    if (count[checkouts[i][1]] === undefined) {
+                        count[checkouts[i][1]] = 0;
+                    }
+                    count[checkouts[i][1]] += 1;
+                }
+                //if the current count is higher than the max count, that's the new max month
+                for (var month in count) {
+                    if (count[month] > maxcount) {
+                        maxcount = count[month];
+                        maxMonth = month;
+                    }
+                }
+                return maxMonth;
+            }
+            // find title
+            function modeTitle(checkouts, movies) {
+                var count = {};
+                var maxcount = 1;
+                var maxTitle = checkouts[0][2];
+                var movieTitle = [];
+                //loop through checkouts
+                for (var i = 0; i < checkouts.length; i++) {
+                    if (count[checkouts[i][2]] === undefined) {
+                        count[checkouts[i][2]] = 0;
+                    }
+                    count[checkouts[i][2]] += 1;
+                }
+                //finds the movie Id with the most checkouts
+                for (var title in count) {
+                    //if current title count is higher, that's the new max
+                    if (count[title] > maxcount) {
+                        maxcount = count[title];
+                        maxTitle = title;
+                    }
+                }
+                //find movie title
+                for (var j = 0; j < movies.length; j++) {
+                    if (movies[j][0] === maxTitle) {
+                        movieTitle.push(movies[j].splice(1, 3).join(' '));
+                    }
+                }
+                return movieTitle.toString();
+            }
+        });
+    </script>
+</body>
+
+</html>
