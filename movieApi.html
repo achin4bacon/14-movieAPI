@@ -3,13 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Movies</title>
+    <title>Let's all go to the movies!</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
         crossorigin="anonymous"></script>
+        <style>
+            body{
+                text-align: center;
+                font-family: monospace;
+                background-color: blanchedalmond;
+                color: forestgreen;
+            }
+            </style>
 </head>
 
 <body>
     <div id="results">
+        <h1>Let's see some Results!</h1>
+        <img src='http://www.catster.com/wp-content/uploads/2015/06/movies.jpg' alt='catmovie'>
          <div class='mostUser' ></div> 
         <div class='mostMonth' ></div> 
       <div class='mostMovie' ></div>
@@ -28,8 +38,8 @@
                 var mostOften = modeCustomer(checkouts);
                 var bestMonth = highestMonth(checkouts);
                 //let's do some jQuery!!
-                $('.mostUser').append('<p>The customer(s) with the most rentals was(were): ' + mostOften + '</p>')
-                $('.mostMonth').append('<p>The month(s) with the most rentals was(were): ' + bestMonth + '</p>')
+                $('.mostUser').append('<p>' + '<b>' + mostOften + '</b> rented the most movies</p>')
+                $('.mostMonth').append('<p> ' + '<b>' + bestMonth + '</b> had the most rentals</p>')
                 
                 // pulls the movie information 
                 $.get('http://159.203.175.239:9001/movies.txt', function (moviez) {
@@ -41,7 +51,7 @@
                     }
                    
                     var poptit = modeTitle(checkouts, movies).toString();
-                    $('.mostMovie').append('<p>The most popular movie title has been: ' + poptit + '</p>')
+                    $('.mostMovie').append('<p> ' + '<b>' + poptit + '</b> was the most popular movie title.</p>')
                 });
 
             });
